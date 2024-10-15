@@ -53,71 +53,71 @@ async def shutdown_event():
     """Application shutdown: de-register the database connection."""
     await close_db_connection(app)
 
-# @app.get(
-#     "/api/v1/",
-#     response_model=models.Landing
-# )
-# def landing_page(
-#     request: Request
-# ):
+@app.get(
+    "/api/v1/",
+    response_model=models.Landing
+)
+def landing_page(
+    request: Request
+):
     
-#     url = str(request.base_url)
+    url = str(request.base_url)
 
-#     return {
-#         "links": [ 
-#             {
-#                 "rel":"service-desc",
-#                 "type":"application/vnd.oai.openapi+json;version=3.0",
-#                 "title":"The OpenAPI definition as JSON",
-#                 "href":f"{url}openapi.json"
-#             },
-#             {
-#                 "rel":"conformance",
-#                 "type":"application/json",
-#                 "title":"Conformance",
-#                 "href":f"{url}conformance"
-#             },
-#             {
-#                 "rel":"data",
-#                 "type":"application/json",
-#                 "title":"Collections",
-#                 "href":f"{url}api/v1/collections"
-#             }
-#         ],
-#         "title":"FastCollection",
-#     }
+    return {
+        "links": [ 
+            {
+                "rel":"service-desc",
+                "type":"application/vnd.oai.openapi+json;version=3.0",
+                "title":"The OpenAPI definition as JSON",
+                "href":f"{url}openapi.json"
+            },
+            {
+                "rel":"conformance",
+                "type":"application/json",
+                "title":"Conformance",
+                "href":f"{url}conformance"
+            },
+            {
+                "rel":"data",
+                "type":"application/json",
+                "title":"Collections",
+                "href":f"{url}api/v1/collections"
+            }
+        ],
+        "title":"FastCollection",
+    }
 
-# @app.get(
-#     "/conformance",
-#     response_model=models.Conformance
-# )
-# def conformance():
+@app.get(
+    "/conformance",
+    response_model=models.Conformance
+)
+def conformance():
     
-#     return {
-#         "conformsTo":[
-#             "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
-#             "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/json",
-#             "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/landing-page",            
-#             "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/oas30",         
-#             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
-#             "http://www.opengis.net/spec/ogcapi-features-1/1.0/req/oas30",
-#             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson",
-#             "http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs",
-#             "http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/queryables",
-#             "http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/queryables-query-parameters",
-#             "http://www.opengis.net/spec/ogcapi-features-4/1.0/conf/create-replace-delete",
-#             "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core",
-#             "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/geodata-tilesets",
-#             "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/mvt",
-#             "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset",
-#             "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tilesets-list"
-#         ]
-#     }
+    return {
+        "conformsTo":[
+            "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
+            "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/json",
+            "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/landing-page",            
+            "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/oas30",         
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/req/oas30",
+            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson",
+            "http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs",
+            "http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/queryables",
+            "http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/queryables-query-parameters",
+            "http://www.opengis.net/spec/ogcapi-features-4/1.0/conf/create-replace-delete",
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core",
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/geodata-tilesets",
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/mvt",
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset",
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tilesets-list"
+        ]
+    }
 
-# @app.get("/api/v1/health_check", tags=["Health"])
-# async def health():
-#     """
-#     Method used to verify server is healthy.
-#     """
+@app.get("/api/v1/health_check", tags=["Health"])
+async def health():
+    """
+    Method used to verify server is healthy.
+    """
 
-#     return {"status": "UP"}
+    return {"status": "UP"}
