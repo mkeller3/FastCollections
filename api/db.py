@@ -1,8 +1,10 @@
-"""FastVector App - Database Setup"""
+"""FastCollections - Database Setup"""
+
 from fastapi import FastAPI
 import asyncpg
 
 from api import config
+
 
 async def connect_to_db(app: FastAPI) -> None:
     """
@@ -16,7 +18,7 @@ async def connect_to_db(app: FastAPI) -> None:
         max_size=10,
         max_queries=50000,
         max_inactive_connection_lifetime=300,
-        timeout=180 # 3 Minutes
+        timeout=180,  # 3 Minutes
     )
 
     # async with app.state.database.acquire() as con:
@@ -26,6 +28,7 @@ async def connect_to_db(app: FastAPI) -> None:
     #     await con.fetchrow(bins_sql.QUANTILE_BINS_SQL)
     #     await con.fetchrow(bins_sql.JENKS_BIN_SQL_1)
     #     await con.fetchrow(bins_sql.JENKS_BIN_SQL_2)
+
 
 async def close_db_connection(app: FastAPI) -> None:
     """

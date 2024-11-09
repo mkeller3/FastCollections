@@ -3,11 +3,13 @@ from enum import Enum
 
 from pydantic import BaseModel, Field
 
+
 class MediaType(str, Enum):
     """Responses Media types formerly known as MIME types."""
 
     json = "application/json"
     openapi30_json = "application/vnd.oai.openapi+json;version=3.0"
+
 
 class Link(BaseModel):
     """Link model.
@@ -62,6 +64,7 @@ class Conformance(BaseModel):
     """Conformance model."""
 
     conformsTo: List[str]
+
 
 class Landing(BaseModel):
     """Landing model."""

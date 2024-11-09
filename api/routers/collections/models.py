@@ -1,4 +1,4 @@
-"""QwikGeo API - Collections - Models"""
+"""FastCollections - Models"""
 
 from typing import NamedTuple, Union, Literal, Optional, List, Dict, Tuple, Any
 from typing_extensions import Annotated
@@ -7,21 +7,26 @@ from enum import Enum
 from pydantic import BaseModel, Field, model_validator
 from geojson_pydantic.features import Feature, FeatureCollection
 
+
 class AddColumn(BaseModel):
     """Model for adding a column to a table"""
 
     column_name: str
-    column_type: Literal['text','integer','bigint','double precision','boolean','time','uuid']
+    column_type: Literal[
+        "text", "integer", "bigint", "double precision", "boolean", "time", "uuid"
+    ]
+
 
 class DeleteColumn(BaseModel):
     """Model for deleting a column from a table"""
 
     column_name: str
 
+
 LonField = Annotated[
     Union[float, int],
     Field(
-        title='Coordinate longitude',
+        title="Coordinate longitude",
         gt=-180,
         lt=180,
     ),
@@ -30,11 +35,12 @@ LonField = Annotated[
 LatField = Annotated[
     Union[float, int],
     Field(
-        title='Coordinate latitude',
+        title="Coordinate latitude",
         gt=-90,
         lt=90,
     ),
 ]
+
 
 class Coordinates(NamedTuple):
     """Class for creating coordinates"""
@@ -42,70 +48,73 @@ class Coordinates(NamedTuple):
     lon: LonField
     lat: LatField
 
+
 class GeojsonGeometry(BaseModel):
     """Model for geojson geometry"""
 
-    type: Literal['Point','MultiPoint','LineString','MultiLineString','Polygon','MultiPolygon']
+    type: Literal[
+        "Point",
+        "MultiPoint",
+        "LineString",
+        "MultiLineString",
+        "Polygon",
+        "MultiPolygon",
+    ]
     coordinates: Coordinates
-    
+
 
 class Geojson(BaseModel):
     """Model for geojson"""
 
-    type: Literal['Feature']
+    type: Literal["Feature"]
     geometry: GeojsonGeometry
     properties: object
     id: Optional[int]
 
+
 class ItemsModel(BaseModel):
     """Model for items endpoint"""
 
-    bbox: str=None
-    limit: int=10
-    offset: int=0
-    properties: str="*"
-    sortby: str="gid"
-    sortdesc: int=1
-    filter: str=None
-    srid: int=4326
-    return_geometry: bool=True
+    bbox: str = None
+    limit: int = 10
+    offset: int = 0
+    properties: str = "*"
+    sortby: str = "gid"
+    sortdesc: int = 1
+    filter: str = None
+    srid: int = 4326
+    return_geometry: bool = True
+
 
 class AggregateModel(BaseModel):
     """Model for aggregating data on a numerical column for a table"""
 
-    type: Literal['distinct', 'avg', 'count', 'sum', 'max', 'min']=None
+    type: Literal["distinct", "avg", "count", "sum", "max", "min"] = None
     column: str
-    group_column: Optional[str]=None
-    group_method: Optional[str]=None
+    group_column: Optional[str] = None
+    group_method: Optional[str] = None
 
 
 class StatisticsModel(BaseModel):
     """Model for performing statistics on a numerical column for a table"""
 
-    coordinates: str = Field(
-        default=None, title="A list of coordinates to perform statistics in a certain geographical area."
-    )
-    geometry_type: Literal['POINT', 'LINESTRING', 'POLYGON']=None
-    spatial_relationship: Literal['ST_Intersects', 'ST_Crosses', 'ST_Within', 'ST_Contains', 'ST_Overlaps', 'ST_Disjoint', 'ST_Touches']=None
     aggregate_columns: List[AggregateModel]
-    filter: str=None
+    filter: str = None
+
 
 class StatisticsResponseModel(BaseModel):
     """Model for statistics response"""
 
     results: Dict[str, Any]
 
+
 class BinsModel(BaseModel):
     """Model for creating bins on a numerical column for a table"""
 
-    coordinates: str = Field(
-        default=None, title="A list of coordinates to perform statistics in a certain geographical area."
-    )
-    geometry_type: Literal['POINT', 'LINESTRING', 'POLYGON']=None
-    spatial_relationship: Literal['ST_Intersects', 'ST_Crosses', 'ST_Within', 'ST_Contains', 'ST_Overlaps', 'ST_Disjoint', 'ST_Touches']=None
-    filter: str=None
-    number_of_bins: int=10
+    filter: str = None
+    number_of_bins: int = 10
     column: str
+
 
 class BreakModel(BaseModel):
     """Model for break"""
@@ -114,23 +123,21 @@ class BreakModel(BaseModel):
     max: float
     count: int
 
+
 class BreaksResponseModel(BaseModel):
     """Model for breaks response"""
 
     results: List[BreakModel]
 
+
 class NumericBreaksModel(BaseModel):
     """Model for creating numerical breaks on a numerical column for a table"""
 
-    coordinates: str = Field(
-        default=None, title="A list of coordinates to perform statistics in a certain geographical area."
-    )
-    geometry_type: Literal['POINT', 'LINESTRING', 'POLYGON']=None
-    spatial_relationship: Literal['ST_Intersects', 'ST_Crosses', 'ST_Within', 'ST_Contains', 'ST_Overlaps', 'ST_Disjoint', 'ST_Touches']=None
-    filter: str=None
+    filter: str = None
     number_of_breaks: int
     column: str
-    break_type: Literal['equal_interval', 'head_tail', 'quantile', 'jenk']
+    break_type: Literal["equal_interval", "head_tail", "quantile", "jenk"]
+
 
 class BinModel(BaseModel):
     """Model for creating bins"""
@@ -138,22 +145,20 @@ class BinModel(BaseModel):
     min: float
     max: float
 
+
 class CustomBreaksModel(BaseModel):
     """Model for creating custom breaks on a numerical column for a table"""
 
-    coordinates: str = Field(
-        default=None, title="A list of coordinates to perform statistics in a certain geographical area."
-    )
-    geometry_type: Literal['POINT', 'LINESTRING', 'POLYGON']=None
-    spatial_relationship: Literal['ST_Intersects', 'ST_Crosses', 'ST_Within', 'ST_Contains', 'ST_Overlaps', 'ST_Disjoint', 'ST_Touches']=None
-    filter: str=None
+    filter: str = None
     column: str
     breaks: List[BinModel]
+
 
 class AutocompleteModel(BaseModel):
     """Response model for autocomplete"""
 
     values: List[str]
+
 
 class Spatial(BaseModel):
     """Spatial Extent model.
@@ -170,6 +175,7 @@ class Spatial(BaseModel):
     bbox: List[List[float]]
     crs: str = "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
 
+
 class Extent(BaseModel):
     """Extent model.
 
@@ -179,12 +185,14 @@ class Extent(BaseModel):
 
     spatial: Optional[Spatial] = None
 
+
 class MediaType(str, Enum):
     """Responses Media types formerly known as MIME types."""
 
     json = "application/json"
     geojson = "application/geo+json"
     mvt = "application/vnd.mapbox-vector-tile"
+
 
 class Link(BaseModel):
     """Link model.
@@ -234,6 +242,7 @@ class Link(BaseModel):
 
     model_config = {"use_enum_values": True}
 
+
 class Collection(BaseModel):
     """Collection model.
 
@@ -253,6 +262,7 @@ class Collection(BaseModel):
 
     model_config = {"extra": "ignore"}
 
+
 class Collections(BaseModel):
     """
     Collections model.
@@ -269,6 +279,7 @@ class Collections(BaseModel):
 
     model_config = {"extra": "allow"}
 
+
 class Queryables(BaseModel):
     """Queryables model.
 
@@ -279,12 +290,13 @@ class Queryables(BaseModel):
     title: str
     properties: Dict[str, Dict[str, str]]
     type: str = "object"
-    schema_name: Annotated[
-        str, Field(alias="$schema")
-    ] = "https://json-schema.org/draft/2019-09/schema"
+    schema_name: Annotated[str, Field(alias="$schema")] = (
+        "https://json-schema.org/draft/2019-09/schema"
+    )
     link: Annotated[str, Field(alias="$id")]
 
     model_config = {"populate_by_name": True}
+
 
 class Item(Feature):
     """Item model
@@ -318,7 +330,6 @@ class Items(FeatureCollection):
     model_config = {"arbitrary_types_allowed": True}
 
 
-
 class TileMatrixSetLink(BaseModel):
     """
     TileMatrixSetLink model.
@@ -341,6 +352,7 @@ class TileMatrixSetRef(BaseModel):
     id: str
     title: Optional[str] = None
     links: List[TileMatrixSetLink]
+
 
 class LayerJSON(BaseModel):
     """
