@@ -1,4 +1,4 @@
-name: Tests
+name: Main Workflow
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
     - main
 
 jobs:
-  run:
+  python-tests:
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -41,3 +41,23 @@ jobs:
       shell: bash -l {0}
       run: |
         ruff format api --check
+
+  semantic-release:
+    needs: run
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Semantic Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: npx semantic-release
