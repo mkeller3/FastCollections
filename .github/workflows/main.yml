@@ -1,0 +1,85 @@
+name: Main Workflow
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  python-tests:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.10']
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Pip install dependencies
+      shell: bash -l {0}
+      run: |
+        python3 -m pip install --upgrade pip
+        pip3 install -r dev_requirements.txt
+    
+    - name: Lint check
+      shell: bash -l {0}
+      run: |
+        ruff check api
+    
+    - name: Format check
+      shell: bash -l {0}
+      run: |
+        ruff format api --check
+
+  semantic-release-dryrun:
+    needs: python-tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Semantic Release Dry Run
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: npx semantic-release --dry-run --no-ci"
+  
+  semantic-release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: semantic-release-dryrun
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Semantic Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: npx semantic-release
+
