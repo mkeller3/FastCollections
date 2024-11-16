@@ -106,7 +106,9 @@ def conformance():
     }
 
 
-@app.get("/api/v1/health_check", tags=["Health"])
+@app.get(
+    "/api/v1/health_check", tags=["Health"], response_model=models.HealthCheckResponse
+)
 async def health():
     """
     Method used to verify server is healthy.

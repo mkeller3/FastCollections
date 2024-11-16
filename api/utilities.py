@@ -95,7 +95,7 @@ async def get_tile(
             field_list = f',"{fields}"'
 
         sql_vector_query = f"""
-        SELECT ST_AsMVT(tile, '{schema}.{table}', 4096)
+        SELECT ST_AsMVT(tile, '{schema}.{table}', 4096), COUNT(*) AS feature_count
         FROM (
             WITH
             bounds AS (
@@ -200,7 +200,7 @@ async def generate_where_clause(
 
     query = ""
 
-    if info.filter:
+    if info.cql_filter:
         sql_field_query = f"""
             SELECT column_name
             FROM information_schema.columns
@@ -215,14 +215,14 @@ async def generate_where_clause(
         for field in db_fields:
             field_mapping[field["column_name"]] = field["column_name"]
 
-        ast = parse(info.filter)
-        filter = to_sql_where(ast, field_mapping)
+        ast = parse(info.cql_filter)
+        cql_filter = to_sql_where(ast, field_mapping)
 
         if no_where is False:
             query += " WHERE "
         else:
             query += " AND "
-        query += f" {filter}"
+        query += f" {cql_filter}"
 
     return query
 
@@ -264,7 +264,7 @@ async def get_table_geojson(
     schema: str,
     table: str,
     app: FastAPI,
-    filter: str = None,
+    cql_filter: str = None,
     bbox: str = None,
     limit: int = 200000,
     offset: int = 0,
@@ -306,12 +306,12 @@ async def get_table_geojson(
         query += f""" FROM "{schema}"."{table}" """
 
         count_query = f"""SELECT COUNT(*) FROM "{schema}"."{table}" """
-        if filter is not None:
-            query += f"WHERE {filter}"
-            count_query += f"WHERE {filter}"
+        if cql_filter is not None:
+            query += f"WHERE {cql_filter}"
+            count_query += f"WHERE {cql_filter}"
 
         if bbox is not None:
-            if filter is not None:
+            if cql_filter is not None:
                 query += " AND "
                 count_query += " AND "
             else:

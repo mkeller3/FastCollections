@@ -4,6 +4,12 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 
+class HealthCheckResponse(BaseModel):
+    """FastCollections - HealthCheckResponse"""
+
+    status: bool
+
+
 class MediaType(str, Enum):
     """Responses Media types formerly known as MIME types."""
 

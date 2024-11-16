@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 import asyncpg
 
-from api import config
+from api import bins_sql, config
 
 
 async def connect_to_db(app: FastAPI) -> None:
@@ -21,13 +21,13 @@ async def connect_to_db(app: FastAPI) -> None:
         timeout=180,  # 3 Minutes
     )
 
-    # async with app.state.database.acquire() as con:
+    async with app.state.database.acquire() as con:
 
-    #     await con.fetchrow(bins_sql.EQUAL_INTERVAL_BINS_SQL)
-    #     await con.fetchrow(bins_sql.HEAD_TAIL_BINS_SQL)
-    #     await con.fetchrow(bins_sql.QUANTILE_BINS_SQL)
-    #     await con.fetchrow(bins_sql.JENKS_BIN_SQL_1)
-    #     await con.fetchrow(bins_sql.JENKS_BIN_SQL_2)
+        await con.fetchrow(bins_sql.equal_interval_bins_sql)
+        await con.fetchrow(bins_sql.head_tail_bins_sql)
+        await con.fetchrow(bins_sql.quantile_bins_sql)
+        await con.fetchrow(bins_sql.jenk_bins_sql_1)
+        await con.fetchrow(bins_sql.jenk_bins_sql_2)
 
 
 async def close_db_connection(app: FastAPI) -> None:

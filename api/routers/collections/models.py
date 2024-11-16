@@ -1,6 +1,6 @@
 """FastCollections - Models"""
 
-from typing import NamedTuple, Union, Literal, Optional, List, Dict, Tuple, Any
+from typing import Literal, Optional, List, Dict, Tuple, Any
 from typing_extensions import Annotated
 from enum import Enum
 
@@ -23,55 +23,6 @@ class DeleteColumn(BaseModel):
     column_name: str
 
 
-LonField = Annotated[
-    Union[float, int],
-    Field(
-        title="Coordinate longitude",
-        gt=-180,
-        lt=180,
-    ),
-]
-
-LatField = Annotated[
-    Union[float, int],
-    Field(
-        title="Coordinate latitude",
-        gt=-90,
-        lt=90,
-    ),
-]
-
-
-class Coordinates(NamedTuple):
-    """Class for creating coordinates"""
-
-    lon: LonField
-    lat: LatField
-
-
-class GeojsonGeometry(BaseModel):
-    """Model for geojson geometry"""
-
-    type: Literal[
-        "Point",
-        "MultiPoint",
-        "LineString",
-        "MultiLineString",
-        "Polygon",
-        "MultiPolygon",
-    ]
-    coordinates: Coordinates
-
-
-class Geojson(BaseModel):
-    """Model for geojson"""
-
-    type: Literal["Feature"]
-    geometry: GeojsonGeometry
-    properties: object
-    id: Optional[int]
-
-
 class ItemsModel(BaseModel):
     """Model for items endpoint"""
 
@@ -81,7 +32,7 @@ class ItemsModel(BaseModel):
     properties: str = "*"
     sortby: str = "gid"
     sortdesc: int = 1
-    filter: str = None
+    cql_filter: str = None
     srid: int = 4326
     return_geometry: bool = True
 
@@ -99,7 +50,7 @@ class StatisticsModel(BaseModel):
     """Model for performing statistics on a numerical column for a table"""
 
     aggregate_columns: List[AggregateModel]
-    filter: str = None
+    cql_filter: str = None
 
 
 class StatisticsResponseModel(BaseModel):
@@ -111,7 +62,7 @@ class StatisticsResponseModel(BaseModel):
 class BinsModel(BaseModel):
     """Model for creating bins on a numerical column for a table"""
 
-    filter: str = None
+    cql_filter: str = None
     number_of_bins: int = 10
     column: str
 
@@ -133,7 +84,7 @@ class BreaksResponseModel(BaseModel):
 class NumericBreaksModel(BaseModel):
     """Model for creating numerical breaks on a numerical column for a table"""
 
-    filter: str = None
+    cql_filter: str = None
     number_of_breaks: int
     column: str
     break_type: Literal["equal_interval", "head_tail", "quantile", "jenk"]
@@ -149,7 +100,7 @@ class BinModel(BaseModel):
 class CustomBreaksModel(BaseModel):
     """Model for creating custom breaks on a numerical column for a table"""
 
-    filter: str = None
+    cql_filter: str = None
     column: str
     breaks: List[BinModel]
 
