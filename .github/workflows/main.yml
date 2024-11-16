@@ -1,4 +1,4 @@
-name: Main Workflow
+name: Run Tests
 
 on:
   push:
@@ -42,25 +42,7 @@ jobs:
       run: |
         ruff format api --check
 
-  semantic-release-dryrun:
-    needs: python-tests
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-
-    - name: Install dependencies
-      run: npm ci
-
-    - name: Semantic Release Dry Run
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: npx semantic-release --dry-run || echo "Dry run complete for PR or push."
+  
   
   semantic-release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
