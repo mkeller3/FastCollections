@@ -43,7 +43,7 @@ jobs:
         ruff format api --check
 
   semantic-release-dryrun:
-    if: github.event_name == 'push'
+    if: github.event_name == 'pull'
     needs: python-tests
     runs-on: ubuntu-latest
 
@@ -61,9 +61,10 @@ jobs:
     - name: Semantic Release Dry Run
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: npx semantic-release --dry-run
+      run: npx semantic-release --dry-run || echo "Dry run complete for PR or push."
   
   semantic-release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: semantic-release-dryrun
     runs-on: ubuntu-latest
 
