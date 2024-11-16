@@ -43,7 +43,7 @@ jobs:
         ruff format api --check
 
   semantic-release:
-    needs: run
+    needs: python-tests
     runs-on: ubuntu-latest
 
     steps:
