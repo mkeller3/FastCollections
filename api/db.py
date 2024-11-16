@@ -22,7 +22,6 @@ async def connect_to_db(app: FastAPI) -> None:
     )
 
     async with app.state.database.acquire() as con:
-
         await con.fetchrow(bins_sql.equal_interval_bins_sql)
         await con.fetchrow(bins_sql.head_tail_bins_sql)
         await con.fetchrow(bins_sql.quantile_bins_sql)
