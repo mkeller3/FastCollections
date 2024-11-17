@@ -17,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: semantic_release_dry_run
+      - name: release_dry_run
         uses: cycjimmy/semantic-release-action@v4
         with:
           dry_run: true
