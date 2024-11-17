@@ -17,6 +17,8 @@ jobs:
       - name: semantic_dry
         uses: cycjimmy/semantic-release-action@v4
         with:
+          semantic_version: 23
+          dry_run: true
           extends: |
             conventional-changelog-conventionalcommits
           extra_plugins: |
@@ -24,7 +26,6 @@ jobs:
             @semantic-release/changelog
             @semantic-release/commit-analyzer
             @semantic-release/exec
-          dry_run: true
     outputs:
       new_release_published: ${{ steps.semantic_dry.outputs.new_release_published }}
       new_release_version: ${{ steps.semantic_dry.outputs.new_release_version }}
