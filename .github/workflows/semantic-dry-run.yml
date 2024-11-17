@@ -31,4 +31,4 @@ jobs:
           unset GITHUB_ACTIONS
           unset GITHUB_EVENT_NAME
 
-          semantic-release --dry-run --no-ci --branches $GITHUB_HEAD_REF
+          npx semantic-release --dry-run --no-ci --branches $GITHUB_HEAD_REF
