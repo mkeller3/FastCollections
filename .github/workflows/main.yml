@@ -60,7 +60,10 @@ jobs:
     - name: Semantic Release Dry Run
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: npx semantic-release --dry-run --no-ci
+      run: |
+        OUTPUT=$(unset GITHUB_ACTIONS && npx semantic-release --dry-run --no-ci --branches "$GITHUB_HEAD_REF")
+        VERSION=$(echo "$OUTPUT" | grep -o "The next release version is [0-9]*\.[0-9]*\.[0-9]*" | awk '{print $6}')
+        echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
   
   semantic-release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
