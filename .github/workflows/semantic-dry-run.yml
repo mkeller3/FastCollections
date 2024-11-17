@@ -4,37 +4,28 @@ on:
   pull_request:
     branches:
       - main
-  workflow_run:
-    workflows: ["python-tests"]
-    types:
-      - completed
 
 jobs:
   semantic-release-dry-run:
     runs-on: ubuntu-latest
-    outputs:
-      new-release-version: ${{ steps.dry-release.outputs.new-release-version }}
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref }}
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Install dependencies
-        run: npm ci
 
-      - name: Semantic Release dry run
-        id: dry-release
-        
-        run: |
-          OUTPUT=$(unset GITHUB_ACTIONS && npx semantic-release --dry-run --no-ci --branches "$GITHUB_HEAD_REF")
-          VERSION=$(echo "$OUTPUT" | grep -o "The next release version is [0-9]*\.[0-9]*\.[0-9]*" | awk '{print $6}')
-          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Use the version
-        run: echo "The version is ${{ steps.dry-release.outputs.new-release-version }}"
+      - name: semantic_release_dry_run
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          dry_run: true
+          extends: |
+            conventional-changelog-conventionalcommits
+          extra_plugins: |
+            @semantic-release/git
+            @semantic-release/changelog
+            @semantic-release/commit-analyzer
+            @semantic-release/exec
