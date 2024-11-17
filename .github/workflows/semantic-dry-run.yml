@@ -11,11 +11,15 @@ on:
 jobs:
   semantic-release-dry-run:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Semantic Release Dry Run
+      - name: semantic-release-dry-run
         uses: cycjimmy/semantic-release-action@v4
         with:
           dry_run: true
