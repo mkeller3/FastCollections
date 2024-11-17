@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/mkeller3/FastCollections/compare/v1.0.0...v1.1.0) (2024-11-17)
+
+
+### Features
+
+* auto update version ([49a522e](https://github.com/mkeller3/FastCollections/commit/49a522e979303e3234d77d9b99a2934b306aaf05))
+
 # 1.0.0 (2024-11-17)
 
 
