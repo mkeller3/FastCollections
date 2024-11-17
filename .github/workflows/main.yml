@@ -42,30 +42,7 @@ jobs:
       run: |
         ruff format api --check
 
-  semantic-release-dryrun:
-    needs: python-tests
-    runs-on: ubuntu-latest
-    outputs:
-      new-release-version: ${{ steps.dry-release.outputs.new-release-version }}
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-
-    - name: Install dependencies
-      run: npm ci
-
-    - name: Checkout branch
-      run: git checkout $GITHUB_HEAD_REF
-  
-    - name: Preview semantic-release
-      run: unset GITHUB_ACTIONS && npx semantic-release --dry-run --no-ci
-
-  
+ 
   semantic-release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: semantic-release-dryrun
