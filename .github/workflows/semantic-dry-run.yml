@@ -8,22 +8,20 @@ on:
 jobs:
   semantic-release-dry-run:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: semantic_dry
+      - name: release
         uses: cycjimmy/semantic-release-action@v4
         with:
-          semantic_version: 23
           dry_run: true
-          ci: false
-          branches: |
-            main
-            next
-            {name: 'beta', prerelease: true}
           extends: |
             conventional-changelog-conventionalcommits
           extra_plugins: |
@@ -31,7 +29,13 @@ jobs:
             @semantic-release/changelog
             @semantic-release/commit-analyzer
             @semantic-release/exec
-    outputs:
-      new_release_published: ${{ steps.semantic_dry.outputs.new_release_published }}
-      new_release_version: ${{ steps.semantic_dry.outputs.new_release_version }}
 
+      - name: Get new release version or assign current
+        run: |
+          if [ "${{ steps.release.outputs.new_release_version }}" != "" ]; then
+            echo "release_version=v${{ steps.release.outputs.new_release_version }}" >> $GITHUB_ENV
+          elif [ "$(git tag --points-at ${{ steps.short-sha.outputs.short-sha }})" != "" ]; then
+            echo "release_version=$(git tag --points-at ${{ steps.short-sha.outputs.short-sha }})" >> $GITHUB_ENV
+          else
+            echo "release_version=$(git describe --always --tags)" >> $GITHUB_ENV
+          fi
