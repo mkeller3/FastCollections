@@ -60,7 +60,7 @@ jobs:
       run: npm ci
 
     - name: Checkout branch
-        run: git checkout $GITHUB_HEAD_REF
+      run: git checkout $GITHUB_HEAD_REF
   
     - name: Preview semantic-release
       run: unset GITHUB_ACTIONS && npx semantic-release --dry-run --no-ci
