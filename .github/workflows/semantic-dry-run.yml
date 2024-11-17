@@ -18,7 +18,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: semantic-release-dry-run
+      - name: release-dry-run
         uses: cycjimmy/semantic-release-action@v4
         with:
           dry_run: true
