@@ -1,11 +1,5 @@
 name: semantic-release-dry-run
 
-on:
-  workflow_run:
-    workflows: ["python-tests"]
-    types: 
-      - completed
-
 jobs:
   semantic-release-dry-run:
     runs-on: ubuntu-latest
