@@ -4,6 +4,10 @@ on:
   pull_request:
     branches:
       - main
+  workflow_run:
+    workflows: ["python-tests"]
+    types:
+      - completed
 
 jobs:
   semantic-release-dry-run:
@@ -23,7 +27,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # add write permissions to job
       - name: Semantic Release dry run
         id: dry-release
         
