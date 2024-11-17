@@ -19,6 +19,7 @@ jobs:
         with:
           semantic_version: 23
           dry_run: true
+          ci: false
           extends: |
             conventional-changelog-conventionalcommits
           extra_plugins: |
