@@ -3,9 +3,9 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+from api import models
 from api.db import close_db_connection, connect_to_db
 from api.routers.collections import router as collections_router
-from api import models
 from api.version import __version__
 
 DESCRIPTION = """

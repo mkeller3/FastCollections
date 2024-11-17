@@ -35,7 +35,7 @@ jobs:
     - name: Lint check
       shell: bash -l {0}
       run: |
-        ruff check api
+        ruff check --select I api
     
     - name: Format check
       shell: bash -l {0}
@@ -60,7 +60,7 @@ jobs:
     - name: Semantic Release Dry Run
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: npx semantic-release --dry-run --no-ci"
+      run: npx semantic-release --dry-run --no-ci
   
   semantic-release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

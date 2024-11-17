@@ -1,14 +1,14 @@
 """FastCollections - Utilities"""
 
-import os
 import json
+import os
 import shutil
+
+import asyncpg
 from fastapi import FastAPI, HTTPException
 from pygeofilter.parsers.ecql import parse
-import asyncpg
 
 from . import config
-
 from .filter.evaluate import to_sql_where
 
 import_processes = {}

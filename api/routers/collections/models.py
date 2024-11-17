@@ -1,11 +1,11 @@
 """FastCollections - Models"""
 
-from typing import Literal, Optional, List, Dict, Tuple, Any
-from typing_extensions import Annotated
 from enum import Enum
+from typing import Any, Dict, List, Literal, Optional, Tuple
 
-from pydantic import BaseModel, Field, model_validator
 from geojson_pydantic.features import Feature, FeatureCollection
+from pydantic import BaseModel, Field, model_validator
+from typing_extensions import Annotated
 
 
 class AddColumn(BaseModel):

@@ -1,7 +1,7 @@
 """FastCollections - Database Setup"""
 
-from fastapi import FastAPI
 import asyncpg
+from fastapi import FastAPI
 
 from api import bins_sql, config
 

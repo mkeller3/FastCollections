@@ -1,23 +1,22 @@
 """QwikGeo API - Collections"""
 
-import os
-import json
-import shutil
 import datetime
-from typing import Optional, Literal
+import json
+import os
+import shutil
 import subprocess
-
-from fastapi import Request, APIRouter, status, Response, HTTPException
-from starlette.responses import FileResponse
-from pygeofilter.parsers.ecql import parse
-import lark
-import asyncpg
-from geojson_pydantic import FeatureCollection, Feature
 import zipfile
+from typing import Literal, Optional
+
+import asyncpg
+import lark
+from fastapi import APIRouter, HTTPException, Request, Response, status
+from geojson_pydantic import Feature, FeatureCollection
+from pygeofilter.parsers.ecql import parse
+from starlette.responses import FileResponse
 
 import api.routers.collections.models as models
-from api import utilities
-from api import config
+from api import config, utilities
 from api.filter.evaluate import to_sql_where
 
 router = APIRouter()
