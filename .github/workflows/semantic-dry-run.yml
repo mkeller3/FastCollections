@@ -11,11 +11,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Semantic Release
+      - name: semantic_dry
         uses: cycjimmy/semantic-release-action@v4
         with:
-          branch: main
           extends: |
             conventional-changelog-conventionalcommits
           extra_plugins: |
@@ -24,5 +25,7 @@ jobs:
             @semantic-release/commit-analyzer
             @semantic-release/exec
           dry_run: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      new_release_published: ${{ steps.semantic_dry.outputs.new_release_published }}
+      new_release_version: ${{ steps.semantic_dry.outputs.new_release_version }}
+
