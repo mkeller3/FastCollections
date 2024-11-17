@@ -25,8 +25,8 @@ jobs:
         run: npm ci
 
       - name: Semantic Release dry run
-        id: dry-release
-        run: |
-          # Trick semantic-release into thinking we're not in a CI environment
-
-          npx semantic-release --dry-run --no-ci --branches $GITHUB_HEAD_REF
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          dry_run: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
