@@ -1,0 +1,5 @@
+fastapi==0.115.5
+asyncpg==0.30.0
+pydantic==2.9.2
+pygeofilter==0.2.4
+geojson_pydantic==1.1.2

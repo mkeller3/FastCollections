@@ -3,9 +3,10 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+from api import models
 from api.db import close_db_connection, connect_to_db
 from api.routers.collections import router as collections_router
-from api import models
+from api.version import __version__
 
 DESCRIPTION = """
 A lightweight python api to serve collections from PostGIS.
@@ -14,7 +15,7 @@ A lightweight python api to serve collections from PostGIS.
 app = FastAPI(
     title="FastCollections",
     description=DESCRIPTION,
-    version="0.0.1",
+    version=__version__,
     contact={
         "name": "Michael Keller",
         "email": "michaelkeller03@gmail.com",
@@ -106,7 +107,9 @@ def conformance():
     }
 
 
-@app.get("/api/v1/health_check", tags=["Health"])
+@app.get(
+    "/api/v1/health_check", tags=["Health"], response_model=models.HealthCheckResponse
+)
 async def health():
     """
     Method used to verify server is healthy.

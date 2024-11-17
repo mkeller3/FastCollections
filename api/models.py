@@ -1,7 +1,13 @@
-from typing import List, Optional, Annotated
 from enum import Enum
+from typing import Annotated, List, Optional
 
 from pydantic import BaseModel, Field
+
+
+class HealthCheckResponse(BaseModel):
+    """FastCollections - HealthCheckResponse"""
+
+    status: bool
 
 
 class MediaType(str, Enum):

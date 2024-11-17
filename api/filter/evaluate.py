@@ -28,11 +28,8 @@
 from typing import Dict, Optional
 
 import shapely.geometry
-
+from pygeofilter import ast, values
 from pygeofilter.backends.evaluator import Evaluator, handle
-from pygeofilter import ast
-from pygeofilter import values
-
 
 COMPARISON_OP_MAP = {
     ast.ComparisonOp.EQ: "=",

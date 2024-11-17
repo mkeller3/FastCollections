@@ -1,23 +1,22 @@
 """QwikGeo API - Collections"""
 
-import os
-import json
-import shutil
 import datetime
-from typing import Optional, Literal
+import json
+import os
+import shutil
 import subprocess
-
-from fastapi import Request, APIRouter, status, Response, HTTPException
-from starlette.responses import FileResponse
-from pygeofilter.parsers.ecql import parse
-import lark
-import asyncpg
-from geojson_pydantic import FeatureCollection
 import zipfile
+from typing import Literal, Optional
+
+import asyncpg
+import lark
+from fastapi import APIRouter, HTTPException, Request, Response, status
+from geojson_pydantic import Feature, FeatureCollection
+from pygeofilter.parsers.ecql import parse
+from starlette.responses import FileResponse
 
 import api.routers.collections.models as models
-from api import utilities
-from api import config
+from api import config, utilities
 from api.filter.evaluate import to_sql_where
 
 router = APIRouter()
@@ -87,7 +86,7 @@ async def collections(request: Request):
 @router.get(path="/{schema}.{table}", response_model=models.Collection)
 async def collection(schema: str, table: str, request: Request):
     """
-    Get information about a collection.
+    Get a collection.
     """
 
     url = str(request.base_url)
@@ -216,7 +215,7 @@ async def items(
     properties: str = "*",
     sortby: str = "gid",
     sortdesc: int = 1,
-    filter: str = None,
+    cql_filter: str = None,
     srid: int = 4326,
     return_geometry: bool = True,
 ):
@@ -233,7 +232,7 @@ async def items(
         "properties",
         "sortby",
         "sortdesc",
-        "filter",
+        "cql_filter",
         "srid",
     ]
 
@@ -284,30 +283,30 @@ async def items(
                         column_where_parameters += " AND "
                     column_where_parameters += f""" {field['column_name']} = '{request.query_params[field['column_name']]}' """
 
-        if filter is not None:
+        if cql_filter is not None:
             field_mapping = {}
 
             for field in db_fields:
                 field_mapping[field["column_name"]] = field["column_name"]
             try:
-                ast = parse(filter)
-            except lark.exceptions.UnexpectedToken as exc:
+                ast = parse(cql_filter)
+            except Exception as exc:
                 raise HTTPException(
-                    status_code=400, detail="Invalid operator used in filter."
+                    status_code=400, detail="Invalid operator used in cql_filter."
                 ) from exc
             try:
-                filter = to_sql_where(ast, field_mapping)
+                cql_filter = to_sql_where(ast, field_mapping)
             except KeyError as exc:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"""Invalid column in filter parameter for {schema}.{table}.""",
+                    detail=f"""Invalid column in cql_filter parameter for {schema}.{table}.""",
                 ) from exc
 
-        if filter is not None and column_where_parameters != "":
-            filter += f" AND {column_where_parameters}"
+        if cql_filter is not None and column_where_parameters != "":
+            cql_filter += f" AND {column_where_parameters}"
         else:
             if column_where_parameters != "":
-                filter = f"{column_where_parameters}"
+                cql_filter = f"{column_where_parameters}"
 
         results = await utilities.get_table_geojson(
             schema=schema,
@@ -318,7 +317,7 @@ async def items(
             sortby=sortby,
             sortdesc=sortdesc,
             bbox=bbox,
-            filter=filter,
+            cql_filter=cql_filter,
             srid=srid,
             return_geometry=return_geometry,
             app=request.app,
@@ -385,7 +384,9 @@ async def items(
 
 
 @router.post(path="/{schema}.{table}/items", response_model=models.Items)
-async def post_items(schema: str, table: str, request: Request, info: models.ItemsModel):
+async def post_items(
+    schema: str, table: str, request: Request, info: models.ItemsModel
+):
     """
     Get geojson from a collection.
     """
@@ -425,23 +426,23 @@ async def post_items(schema: str, table: str, request: Request, info: models.Ite
                             detail=f"""Column: {property} is not a column for {schema}.{table}.""",
                         )
 
-        if info.filter is not None:
+        if info.cql_filter is not None:
             field_mapping = {}
 
             for field in db_fields:
                 field_mapping[field["column_name"]] = field["column_name"]
             try:
-                ast = parse(info.filter)
+                ast = parse(info.cql_filter)
             except lark.exceptions.UnexpectedToken as exc:
                 raise HTTPException(
-                    status_code=400, detail="Invalid operator used in filter."
+                    status_code=400, detail="Invalid operator used in cql_filter."
                 ) from exc
             try:
-                info.filter = to_sql_where(ast, field_mapping)
+                info.cql_filter = to_sql_where(ast, field_mapping)
             except KeyError as exc:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"""Invalid column in filter parameter for {schema}.{table}.""",
+                    detail=f"""Invalid column in cql_filter parameter for {schema}.{table}.""",
                 ) from exc
 
         results = await utilities.get_table_geojson(
@@ -453,7 +454,7 @@ async def post_items(schema: str, table: str, request: Request, info: models.Ite
             sortby=info.sortby,
             sortdesc=info.sortdesc,
             bbox=info.bbox,
-            filter=info.filter,
+            cql_filter=info.cql_filter,
             srid=info.srid,
             return_geometry=info.return_geometry,
             app=request.app,
@@ -516,9 +517,9 @@ async def post_items(schema: str, table: str, request: Request, info: models.Ite
 
 
 @router.post(path="/{schema}.{table}/items/create", response_model=models.Item)
-async def create_item(schema: str, table: str, info: models.Geojson, request: Request):
+async def create_item(schema: str, table: str, info: Feature, request: Request):
     """
-    Create a new item to a collection.
+    Create a new item in a collection.
     """
 
     pool = request.app.state.database
@@ -527,7 +528,8 @@ async def create_item(schema: str, table: str, info: models.Geojson, request: Re
         sql_field_query = f"""
         SELECT column_name, data_type
         FROM information_schema.columns
-        WHERE table_name = '{schema}.{table}'
+        WHERE table_name = '{table}'
+        AND table_schema = '{schema}'
         AND column_name != 'geom'
         AND column_name != 'gid';
         """
@@ -628,7 +630,8 @@ async def item(
         sql_field_query = f"""
             SELECT column_name
             FROM information_schema.columns
-            WHERE table_name = '{schema}.{table}'
+            WHERE table_name = '{table}'
+            AND table_schema = '{schema}'
             AND column_name != 'geom';
         """
 
@@ -644,7 +647,7 @@ async def item(
         results = await utilities.get_table_geojson(
             schema=schema,
             table=table,
-            filter=f"gid = '{id}'",
+            cql_filter=f"gid = '{id}'",
             properties=properties,
             return_geometry=return_geometry,
             srid=srid,
@@ -677,7 +680,7 @@ async def item(
 
 @router.put(path="/{schema}.{table}/items/{id}", response_model=models.Item)
 async def update_item(
-    schema: str, table: str, id: int, info: models.Geojson, request: Request
+    schema: str, table: str, id: int, info: Feature, request: Request
 ):
     """
     Update an item in a collection.
@@ -689,7 +692,8 @@ async def update_item(
         sql_field_query = f"""
         SELECT column_name, data_type
         FROM information_schema.columns
-        WHERE table_name = '{schema}.{table}'
+        WHERE table_name = '{table}'
+        AND table_schema = '{schema}'
         AND column_name != 'geom'
         AND column_name != 'gid';
         """
@@ -775,7 +779,7 @@ async def update_item(
 
 @router.patch(path="/{schema}.{table}/items/{id}", response_model=models.Item)
 async def modify_item(
-    schema: str, table: str, id: int, info: models.Geojson, request: Request
+    schema: str, table: str, id: int, info: models.Feature, request: Request
 ):
     """
     Modify an item in a collection.
@@ -787,7 +791,8 @@ async def modify_item(
         sql_field_query = f"""
         SELECT column_name, data_type
         FROM information_schema.columns
-        WHERE table_name = '{schema}.{table}'
+        WHERE table_name = '{table}'
+        AND table_schema = '{schema}'
         AND column_name != 'geom'
         AND column_name != 'gid';
         """
@@ -1439,7 +1444,7 @@ async def closest_features(
     limit: int = 10,
     offset: int = 0,
     properties: str = "*",
-    filter: str = None,
+    cql_filter: str = None,
     srid: int = 4326,
     return_geometry: bool = True,
 ):
@@ -1449,7 +1454,7 @@ async def closest_features(
 
     properties += f", (geom <-> ST_SetSRID(ST_MakePoint( {longitude}, {latitude} ), 4326)) * 1000 AS distance_in_kilometers"
 
-    if filter is not None:
+    if cql_filter is not None:
         db_fields = await utilities.get_table_columns(
             schema=schema, table=table, app=request.app
         )
@@ -1459,17 +1464,17 @@ async def closest_features(
         for field in db_fields:
             field_mapping[field] = field
         try:
-            ast = parse(filter)
+            ast = parse(cql_filter)
         except lark.exceptions.UnexpectedToken as exc:
             raise HTTPException(
-                status_code=400, detail="Invalid operator used in filter."
+                status_code=400, detail="Invalid operator used in cql_filter."
             ) from exc
         try:
-            filter = to_sql_where(ast, field_mapping)
+            cql_filter = to_sql_where(ast, field_mapping)
         except KeyError as exc:
             raise HTTPException(
                 status_code=400,
-                detail=f"""Invalid column in filter parameter for {schema}.{table}.""",
+                detail=f"""Invalid column in cql_filter parameter for {schema}.{table}.""",
             ) from exc
 
     results = await utilities.get_table_geojson(
@@ -1481,7 +1486,7 @@ async def closest_features(
         sortby="distance_in_kilometers",
         sortdesc=1,
         bbox=None,
-        filter=filter,
+        cql_filter=cql_filter,
         srid=srid,
         return_geometry=return_geometry,
         app=request.app,
@@ -1562,7 +1567,7 @@ async def download(
     table: str,
     format: Literal["csv", "kml", "geojson", "xlsx", "gml", "shp", "tab", "gpkg"],
     file_name: str,
-    filter: str = None,
+    cql_filter: str = None,
     limit: int = 10,
     offset: int = 0,
     properties: str = "*",
@@ -1594,7 +1599,7 @@ async def download(
 
     query = f"SELECT {properties} FROM {schema}.{table} "
 
-    if filter is not None:
+    if cql_filter is not None:
         field_mapping = {}
 
         sql_field_query = f"""
@@ -1613,20 +1618,20 @@ async def download(
             for field in db_fields:
                 field_mapping[field["column_name"]] = field["column_name"]
             try:
-                ast = parse(filter)
+                ast = parse(cql_filter)
             except lark.exceptions.UnexpectedToken as exc:
                 raise HTTPException(
-                    status_code=400, detail="Invalid operator used in filter."
+                    status_code=400, detail="Invalid operator used in cql_filter."
                 ) from exc
             try:
-                filter = to_sql_where(ast, field_mapping)
+                cql_filter = to_sql_where(ast, field_mapping)
             except KeyError as exc:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"""Invalid column in filter parameter for {schema}.{table}.""",
+                    detail=f"""Invalid column in cql_filter parameter for {schema}.{table}.""",
                 ) from exc
 
-            query += f"WHERE {filter} "
+            query += f"WHERE {cql_filter} "
 
     query += f"OFFSET {offset} LIMIT {limit}"
 
