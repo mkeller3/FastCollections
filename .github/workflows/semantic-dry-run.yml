@@ -20,6 +20,10 @@ jobs:
           semantic_version: 23
           dry_run: true
           ci: false
+          branches: |
+            main
+            next
+            {name: 'beta', prerelease: true}
           extends: |
             conventional-changelog-conventionalcommits
           extra_plugins: |
