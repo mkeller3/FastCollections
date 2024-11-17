@@ -1,9 +1,10 @@
 name: semantic-release-dry-run
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["python-tests"]
+    types:
+      - completed
 
 jobs:
   semantic-release-dry-run:
@@ -15,10 +16,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: release_dry_run
+      - name: semantic_release_dry_run
         uses: cycjimmy/semantic-release-action@v4
         with:
           dry_run: true
