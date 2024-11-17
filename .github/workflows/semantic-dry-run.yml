@@ -18,7 +18,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: release
+      - name: semantic-release-dry-run
         uses: cycjimmy/semantic-release-action@v4
         with:
           dry_run: true
@@ -29,13 +29,3 @@ jobs:
             @semantic-release/changelog
             @semantic-release/commit-analyzer
             @semantic-release/exec
-
-      - name: Get new release version or assign current
-        run: |
-          if [ "${{ steps.release.outputs.new_release_version }}" != "" ]; then
-            echo "release_version=v${{ steps.release.outputs.new_release_version }}" >> $GITHUB_ENV
-          elif [ "$(git tag --points-at ${{ steps.short-sha.outputs.short-sha }})" != "" ]; then
-            echo "release_version=$(git tag --points-at ${{ steps.short-sha.outputs.short-sha }})" >> $GITHUB_ENV
-          else
-            echo "release_version=$(git describe --always --tags)" >> $GITHUB_ENV
-          fi
