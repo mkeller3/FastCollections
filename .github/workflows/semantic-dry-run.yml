@@ -28,7 +28,5 @@ jobs:
         id: dry-release
         run: |
           # Trick semantic-release into thinking we're not in a CI environment
-          unset GITHUB_ACTIONS
-          unset GITHUB_EVENT_NAME
 
           npx semantic-release --dry-run --no-ci --branches $GITHUB_HEAD_REF
