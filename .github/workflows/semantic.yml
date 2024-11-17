@@ -25,6 +25,8 @@ jobs:
 
       - name: Semantic Release dry run
         id: dry-release
+        permissions:
+          contents: write
         run: |
           OUTPUT=$(unset GITHUB_ACTIONS && npx semantic-release --dry-run --no-ci --branches "$GITHUB_HEAD_REF")
           VERSION=$(echo "$OUTPUT" | grep -o "The next release version is [0-9]*\.[0-9]*\.[0-9]*" | awk '{print $6}')
