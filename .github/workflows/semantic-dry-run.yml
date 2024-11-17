@@ -2,7 +2,7 @@ name: semantic-release-dry-run
 
 on:
   workflow_run:
-    workflows: ["tests"]
+    workflows: ["python-tests"]
     branches: [main]
     types: 
       - completed
