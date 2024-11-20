@@ -275,6 +275,8 @@ async def items(
                             status_code=400,
                             detail=f"""Column: {property} is not a column for {schema}.{table}.""",
                         )
+            if "gid" not in properties:
+                properties += ",gid"
 
         if new_query_parameters:
             for field in db_fields:
@@ -425,6 +427,8 @@ async def post_items(
                             status_code=400,
                             detail=f"""Column: {property} is not a column for {schema}.{table}.""",
                         )
+            if "gid" not in info.properties:
+                info.properties += ",gid"
 
         if info.cql_filter is not None:
             field_mapping = {}

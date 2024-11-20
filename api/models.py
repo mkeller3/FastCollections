@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 class HealthCheckResponse(BaseModel):
     """FastCollections - HealthCheckResponse"""
 
-    status: bool
+    status: str
 
 
 class MediaType(str, Enum):

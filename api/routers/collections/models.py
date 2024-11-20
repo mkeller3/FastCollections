@@ -281,7 +281,7 @@ class Items(FeatureCollection):
     model_config = {"arbitrary_types_allowed": True}
 
 
-class TileMatrixSetLink(BaseModel):
+class TileLink(BaseModel):
     """
     TileMatrixSetLink model.
     Based on http://docs.opengeospatial.org/per/19-069.html#_tilematrixsets
@@ -294,6 +294,16 @@ class TileMatrixSetLink(BaseModel):
     model_config = {"use_enum_values": True}
 
 
+class TileMatrixSetLink(BaseModel):
+    """
+    TileMatrixSetLink model.
+    Based on http://docs.opengeospatial.org/per/19-069.html#_tilematrixsets
+    """
+
+    tileMatrixSet: str
+    tileMatrixSetURI: str
+
+
 class TileMatrixSetRef(BaseModel):
     """
     TileMatrixSetRef model.
@@ -302,7 +312,8 @@ class TileMatrixSetRef(BaseModel):
 
     id: str
     title: Optional[str] = None
-    links: List[TileMatrixSetLink]
+    links: List[TileLink]
+    tileMatrixSetLinks: List[TileMatrixSetLink]
 
 
 class LayerJSON(BaseModel):
