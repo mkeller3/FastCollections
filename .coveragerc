@@ -1,0 +1,5 @@
+[run]
+omit = test*,*/dist-packages/*
+
+[report]
+omit = *test*,*/dist-packages/*
