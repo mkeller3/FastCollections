@@ -1,3 +1,15 @@
+## [1.3.1](https://github.com/mkeller3/FastCollections/compare/v1.3.0...v1.3.1) (2024-11-21)
+
+
+### Bug Fixes
+
+* add closing bracket ([b04a22e](https://github.com/mkeller3/FastCollections/commit/b04a22e92c67777df3b0a29170a2dd77b219f42a))
+* add token for pipeline ([0ba94e5](https://github.com/mkeller3/FastCollections/commit/0ba94e5635b60024166935160b9374ee2eda26d3))
+* dry release ([90e1feb](https://github.com/mkeller3/FastCollections/commit/90e1febcbfce49b6f07ee14ad0b2673e5f602347))
+* fix endpoints and add test cases ([14fa459](https://github.com/mkeller3/FastCollections/commit/14fa45903bfc0468813d106bf55b4acdc07418ea))
+* remove ([4b5d291](https://github.com/mkeller3/FastCollections/commit/4b5d2912e4af4eb20f38fb0ea3a23d0c982e3132))
+* semantic release ([ae6a997](https://github.com/mkeller3/FastCollections/commit/ae6a997ab25b58cc89e2cc3d2c4087c6046797cb))
+
 # [1.3.0](https://github.com/mkeller3/FastCollections/compare/v1.2.0...v1.3.0) (2024-11-17)
 
 
